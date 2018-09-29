@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .asm-count-down{
+            width: 200px;
+            height: 200px;
+            margin: 200px auto;
+            position: relative;
+            background-color: #91bf78;
+            border-radius: 200px;
+            border: 1px solid #fdc028;
+        }
+        .asm-count-txt{
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 200px;
+            height: 200px;
+            line-height: 200px;
+            text-align: center;
+            z-index: 99;
+            border-radius: 200px;
+            background: transparent;
+        }
+        .asm-count-left,
+        .asm-count-right,
+        .asm-count-left-mask,
+        .asm-count-right-mask{
+            width: 200px;
+            height: 200px;
+            border-radius: 200px;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .asm-count-left,
+        .asm-count-left-mask {
+            clip:rect(0,100px,auto,0);
+        }
+        .asm-count-right,
+        .asm-count-right-mask{
+            clip: rect(0, auto, auto, 100px);
+        }
+
+        .asm-count-left-mask,
+        .asm-count-right-mask{
+            -webkit-transition: transform 500ms linear;
+            transition: transform 500ms linear;
+        }
+        .asm-count-left-mask{
+            background-color: #16957e;
+        }
+        .asm-count-right-mask{
+            background-color: red;
+        }
+    </style>
+</head>
+<body>
+<div class="asm-count-down">
+    <div class="asm-count-txt">
+        <span id="time">10</span>s
+    </div>
+    <div class="asm-count-left">
+        <div class="asm-count-left-mask" id="left"></div>
+    </div>
+    <div class="asm-count-right">
+        <div class="asm-count-right-mask" id="right"></div>
+    </div>
+</div>
+<script>
+    function CountDown(d) {
+        this.countdown = d/1000; //实时倒计时时间
+        this.duration = d/1000;
+        this.timer = null;
+    }
+
+    CountDown.prototype.init = function () {
+        this.reset();
+        this.running();
+    }
+
+    CountDown.prototype.paused = function () {
+        clearInterval(this.timer);
+    }
+
+    CountDown.prototype.running = function () {
+        var that = this;
+        this.timer = setInterval(function () {
+            if (that.countdown <= 0) {
+//                clearInterval(that.timer);
+                that.reset();
+            } else {
+                that.countdown--;
+                console.log('xxxxxxxxxxx',that.countdown);
+                document.querySelector("#time").innerHTML = that.countdown;
+                that.setAnimation(that.countdown);
+            }
+        }, 1000)
+    }
+
+    CountDown.prototype.setAnimation = function (countdown) {
+        var percent = ((1- (countdown/this.duration))*360).toFixed(0); //百分比转成度
+        if( percent <= 180){
+            document.querySelector("#right").style.transition='transform 500ms linear';
+            document.querySelector("#right").style.transform='rotate('+ percent +'deg)';
+        }else{
+            document.querySelector("#left").style.transition='transform 500ms linear';
+            document.querySelector("#left").style.transform='rotate('+ (percent - 180) +'deg)';
+        }
+    }
+
+    CountDown.prototype.reset = function () {
+//        clearInterval(this.timer);
+        this.countdown = this.duration;
+        document.querySelector("#left").style.transition='transform 0ms linear';
+        document.querySelector("#left").style.transform='rotate(0deg)';
+        document.querySelector("#right").style.transition='transform 0ms linear';
+        document.querySelector("#right").style.transform='rotate(0deg)';
+    }
+
+    var c = new  CountDown(10000);
+    c.init();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        /*支持IE9及以上*/
+        .circle-bar { font-size:200px; width: 1em; height: 1em; position: relative;  background-color: #333; }
+        .circle-bar-left,.circle-bar-right { width: 1em; height: 1em; background-color: #eee; }
+        /*
+            这里采用clip剪切了圆，实现左右两个半圆，右半圆在后面，因此在更上一层，
+            clip的用法参考：http://www.w3school.com.cn/cssref/pr_pos_clip.asp
+         */
+        .circle-bar-right { clip:rect(0,auto,auto,.5em); }
+        .circle-bar-left { clip:rect(0,.5em,auto,0); }
+
+        .mask { width: 0.8em; height: 0.8em;  background-color: #fff;text-align: center;line-height: 0.2em; color:rgba(0,0,0,0.5); }
+        .mask :first-child { font-size: 0.3em; height: 0.8em; line-height: 0.8em; display: block;  }
+        /*所有的后代都水平垂直居中，这样就是同心圆了*/
+        .circle-bar * {  position: absolute; top:0; right:0; bottom:0; left:0; margin:auto; }
+        /*自身以及子元素都是圆*/
+        .circle-bar, .circle-bar > * { border-radius: 50%; }
+    </style>
+</head>
+<body>
+<div class="circle-bar">
+    <div class="circle-bar-left"></div>
+    <div class="circle-bar-right"></div>
+    <!-- 遮罩层，显示百分比 -->
+    <div class="mask">
+        <span class="percent">60%</span>
+    </div>
+</div>
+<script>
+    //反正CSS3中的border-radius属性IE8是不支持了，所以这里就用新方法吧getElementsByClassName()走起
+    window.onload = function(){
+
+        var circleBar    = document.getElementsByClassName('circle-bar')[0];
+        var percent      = parseInt(circleBar.getElementsByClassName('percent')[0].firstChild.nodeValue);
+        var color        = circleBar.css('background-color');
+        var left_circle  = circleBar.getElementsByClassName('circle-bar-left')[0];
+        var right_circle = circleBar.getElementsByClassName('circle-bar-right')[0];
+
+        if( percent <= 50 ) {
+            var rotate = 'rotate('+(percent*3.6)+'deg)';
+            right_circle.css3('transform',rotate);
+        }else {
+            var rotate = 'rotate('+((percent-50)*3.6)+'deg)';
+            right_circle.css ('background-color',color);//背景色设置为进度条的颜色
+            right_circle.css3('transform','rotate(0deg)');//右侧不旋转
+            left_circle.css3 ('transform',rotate);//左侧旋转
+        }
+    }
+</script>
+</body>
+</html>
